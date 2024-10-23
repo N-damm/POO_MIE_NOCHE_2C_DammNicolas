@@ -1,0 +1,25 @@
+@startuml
+participant Main
+participant ParqueNatural
+participant Area
+participant BoletoEstudiantil
+
+Main -> ParqueNatural: emitirBoleto(dni: int, fecha: Date, idAreas: List<String>, tipoBoleto: TipoBoleto): Boleto
+
+ParqueNatural -> ParqueNatural: buscarVisitante(dni: int) : Visitante
+
+
+loop para cada area
+    ParqueNatural -> Area: tieneCapacidad(fecha: Date): boolean
+    Area --> ParqueNatural: boolean
+end
+
+alt todas las áreas tienen capacidad disponible
+    ParqueNatural -> BoletoEstudiantil: new BoletoEstudiantil(visitante: Visitante, fecha: Date, areas: List<Area>): Boleto
+    BoletoEstudiantil --> ParqueNatural: Boleto
+    ParqueNatural -> ParqueNatural: agregarBoleto(boleto: Boleto)
+    ParqueNatural --> Main: Boleto
+else al menos un área sin capacidad disponible
+    ParqueNatural --> Main: throw CapacidadExcedidaException
+end
+@enduml

@@ -1,0 +1,94 @@
+@startuml
+class ParqueNatural {
+  -instancia: ParqueNatural
+  -areas: List<Area>
+  -visitantes: List<Visitante>
+  -boletosEmitidos: List<Boleto>
+  __
+  +getInstance(): ParqueNatural
+  +registrarArea(idArea: String, ubicacion: String, capacidadMaxima: int): void
+  +emitirBoleto(dni: int, fecha: Date, idAreas: List<String>, tipoBoleto: TipoBoleto): Boleto
+  +calcularPrecioFinal(idBoleto: String): double
+  +buscarVisitante(dni: int): Visitante
+}
+
+class Area {
+  -contadorId: int
+  -idArea: String
+  -ubicacion: String
+  -capacidadMaxima: int
+  -boletosParaFecha: Map<Date, List<Boleto>>
+  __
+  +Area(idArea: String, ubicacion: String, capacidadMaxima: int)
+  +tieneCapacidad(fecha: Date): boolean
+  +registrarBoleto(boleto: Boleto): void
+  +getCantidadVisitantes(fecha: Date): int
+  +getCapacidadDisponible(fecha: Date): int
+}
+
+class Visitante {
+  -dni: int
+  -nombre: String
+  -boletos: List<Boleto>
+  __
+  +Visitante(dni: int, nombre: String)
+  +agregarBoleto(boleto: Boleto): void
+}
+
+abstract class Boleto {
+  #contadorId: int
+  #idBoleto: String
+  #visitante: Visitante
+  #fecha: Date
+  #areas: List<Area>
+  #estado: EstadoBoleto
+  #precioBase: double
+  __
+  +{abstract} calcularPrecio(): double
+  +getAreas(): List<Area>
+  +getFecha(): Date
+  +getEstado(): EstadoBoleto
+  #actualizarEstado(nuevoEstado: EstadoBoleto): void
+}
+
+class BoletoEstudiantil {
+  +BoletoEstudiantil(visitante: Visitante, fecha: Date, areas: List<Area>)
+  +calcularPrecio(): double
+}
+
+class BoletoTemporadaBaja {
+  +BoletoTemporadaBaja(visitante: Visitante, fecha: Date, areas: List<Area>)
+  +calcularPrecio(): double
+}
+
+class BoletoTemporadaAlta {
+  +BoletoTemporadaAlta(visitante: Visitante, fecha: Date, areas: List<Area>)
+  +calcularPrecio(): double
+}
+
+enum EstadoBoleto  {
+  EMITIDO
+  UTILIZADO
+  VENCIDO
+}
+
+enum TipoBoleto {
+    ESTUDIANTIL
+    TEMPORADA_BAJA
+    TEMPORADA_ALTA
+}
+
+ParqueNatural "1" *-- "*" Area 
+ParqueNatural "1" *-- "*" Visitante
+ParqueNatural "1" *-- "*" Boleto
+
+Visitante "1" -- "*" Boleto
+Area "*" -- "*" Boleto
+
+Boleto <|-- BoletoEstudiantil
+Boleto <|-- BoletoTemporadaBaja
+Boleto <|-- BoletoTemporadaAlta
+
+Boleto "*" -- "1" EstadoBoleto
+ParqueNatural -- TipoBoleto
+@enduml
