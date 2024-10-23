@@ -1,0 +1,37 @@
+@startuml
+participant Main
+participant ParqueNatural
+participant Boleto
+participant BoletoEstudiantil
+participant BoletoTemporadaBaja
+participant BoletoTemporadaAlta
+
+Main -> ParqueNatural : calcularPrecioFinal(idBoleto: String): double
+activate ParqueNatural
+
+ParqueNatural -> Boleto : calcularPrecio(): double
+activate Boleto
+
+alt Es BoletoEstudiantil
+    Boleto -> BoletoEstudiantil : calcularPrecio(): double
+    activate BoletoEstudiantil
+    BoletoEstudiantil --> ParqueNatural : double
+    deactivate BoletoEstudiantil
+else Es BoletoTemporadaBaja
+    Boleto -> BoletoTemporadaBaja : calcularPrecio(): double
+    activate BoletoTemporadaBaja
+    BoletoTemporadaBaja --> ParqueNatural : double
+    deactivate BoletoTemporadaBaja
+else Es BoletoTemporadaAlta
+    Boleto -> BoletoTemporadaAlta : calcularPrecio(): double
+    activate BoletoTemporadaAlta
+    BoletoTemporadaAlta --> ParqueNatural : double
+    deactivate BoletoTemporadaAlta
+end
+
+deactivate Boleto
+
+ParqueNatural --> Main : double
+
+deactivate ParqueNatural
+@enduml
